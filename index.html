@@ -3,18 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Two small service website demos. Explore a cleaning quote calculator and a salon booking page.">
-  <title>Service website demos</title>
+  <meta name="description" content="Polyakov Studio builds websites for service businesses. Try a cleaning estimate or explore a salon booking demo.">
+  <title>Websites for service businesses | Polyakov Studio</title>
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; color: #172821; background: #f4f3ec; font: 1rem/1.55 system-ui, sans-serif; }
-    main { width: min(64rem, 100% - 2.5rem); margin: auto; padding: clamp(2.5rem, 7vw, 5rem) 0; }
+    .masthead, main { width: min(64rem, 100% - 2.5rem); margin: auto; }
+    .masthead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; border-bottom: 1px solid #d8ded3; }
+    .studio-name { font-weight: 700; }
+    .contact { display: inline-flex; align-items: center; min-height: 44px; padding: .5rem .875rem; border-radius: .375rem; color: white; background: #184932; text-decoration: none; text-align: center; }
+    .contact:hover { background: #102e21; }
+    main { padding: clamp(2rem, 5vw, 4rem) 0; }
     h1, h2 { font-family: Georgia, serif; font-weight: 400; line-height: 1.08; }
-    h1 { margin: 0; font-size: clamp(2.6rem, 7vw, 5.4rem); letter-spacing: -.055em; }
+    h1 { margin: 0; font-size: clamp(2.6rem, 6vw, 4.4rem); letter-spacing: -.055em; text-wrap: balance; }
     main > p { max-width: 43rem; color: #46574c; }
     .demos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1.25rem; margin-top: 2.5rem; }
     article { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #d8ded3; border-radius: 1rem; background: #fff; }
-    .preview { aspect-ratio: 16/10; overflow: hidden; background: #dbe5db; }
+    .preview { aspect-ratio: 16/9; overflow: hidden; background: #dbe5db; }
     .salon { background: #e9dcd8; }
     img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .copy { flex: 1; display: flex; flex-direction: column; align-items: flex-start; padding: 1.5rem; }
@@ -26,9 +31,13 @@
   </style>
 </head>
 <body>
+  <header class="masthead">
+    <span class="studio-name">Polyakov Studio</span>
+    <a class="contact" href="mailto:s4s4spol@gmail.com?subject=Website%20project">Discuss a project</a>
+  </header>
   <main>
-    <h1>Service website demos</h1>
-    <p>Two examples of how a customer can estimate a cleaning visit or find the right salon service on a phone.</p>
+    <h1>Websites for service businesses</h1>
+    <p>Try two examples of what your customers could do on a site we build: get a cleaning estimate or find a time for a haircut.</p>
     <div class="demos">
       <article>
         <div class="preview"><img src="clearroom-preview.jpg" alt="Clearroom home page with a cleaning estimate calculator"></div>
