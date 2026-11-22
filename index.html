@@ -14,9 +14,9 @@
     main > p { max-width: 43rem; color: #46574c; }
     .demos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1.25rem; margin-top: 2.5rem; }
     article { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #d8ded3; border-radius: 1rem; background: #fff; }
-    .preview { height: 17.5rem; display: flex; justify-content: center; align-items: start; padding: 1.5rem 1.5rem 0; overflow: hidden; background: #dbe5db; }
+    .preview { aspect-ratio: 16/10; overflow: hidden; background: #dbe5db; }
     .salon { background: #e9dcd8; }
-    img { display: block; width: min(100%, 19rem); height: auto; border-radius: .65rem .65rem 0 0; box-shadow: 0 .25rem 1rem #17282122; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .copy { flex: 1; display: flex; flex-direction: column; align-items: flex-start; padding: 1.5rem; }
     h2 { font-size: 2rem; margin: 0; }
     .copy p { margin: .6rem 0 1.2rem; color: #46574c; }
@@ -31,7 +31,7 @@
     <p>Two examples of how a customer can estimate a cleaning visit or find the right salon service on a phone.</p>
     <div class="demos">
       <article>
-        <div class="preview"><img src="clearroom-quote.png" alt="Clearroom calculator showing cleaning type, room counts and an estimated price"></div>
+        <div class="preview"><img src="clearroom-preview.jpg" alt="Clearroom home page with a cleaning estimate calculator"></div>
         <div class="copy">
           <h2>Clearroom Cleaning</h2>
           <p>Choose a cleaning service, room counts and extras to see a sample price.</p>
@@ -39,10 +39,10 @@
         </div>
       </article>
       <article>
-        <div class="preview salon"><img src="linden-booking.png" alt="Linden Hair Studio mobile layout with opening hours and a Book online button"></div>
+        <div class="preview salon"><img src="linden-preview.jpg" alt="Linden Hair Studio home page with a barbershop photograph and a Book online button"></div>
         <div class="copy">
           <h2>Linden Hair Studio</h2>
-          <p>Browse services and see where a booking button can hand off to the salon’s existing provider.</p>
+          <p>Browse prices, choose a barber and preview an appointment.</p>
           <a href="linden.html">Explore the booking page</a>
         </div>
       </article>
