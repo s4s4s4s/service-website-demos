@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Polyakov Studio builds websites for service businesses. Try a cleaning estimate or explore a salon booking demo.">
+  <meta name="description" content="Polyakov Studio builds websites for service businesses from $650. See the packages, try a cleaning estimate or explore a salon booking demo.">
   <title>Websites for service businesses | Polyakov Studio</title>
   <style>
     * { box-sizing: border-box; }
@@ -27,7 +27,15 @@
     .copy p { margin: .6rem 0 1.2rem; color: #46574c; }
     a { color: #184932; margin-top: auto; font-weight: 650; text-underline-offset: .22em; }
     a:focus-visible { outline: 2px solid #184932; outline-offset: 4px; }
-    footer { margin-top: 2rem; color: #46574c; font-size: .875rem; }
+    .pricing { margin-top: clamp(3.5rem, 8vw, 6rem); padding-top: 2rem; border-top: 1px solid #d8ded3; }
+    .pricing > p { max-width: 48rem; color: #46574c; }
+    .packages { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+    .package { display: flex; flex-direction: column; align-items: flex-start; padding: clamp(1.25rem, 4vw, 2rem); background: #edf1e6; border: 1px solid #d8ded3; border-radius: 1rem; }
+    .package h3 { margin: 0; font-size: 1.2rem; }
+    .amount { margin: .55rem 0; font: 2.3rem/1.12 Georgia, serif; letter-spacing: -.04em; }
+    .amount span { font: 500 .95rem/1.4 system-ui, sans-serif; color: #46574c; letter-spacing: 0; }
+    .scope { margin: 0 0 1.2rem; color: #46574c; }
+    .demo-note { margin-top: 1.25rem; font-size: .9rem; }
   </style>
 </head>
 <body>
@@ -38,6 +46,7 @@
   <main>
     <h1>Websites for service businesses</h1>
     <p>Try two examples of what your customers could do on a site we build: get a cleaning estimate or find a time for a haircut.</p>
+    <a href="#pricing">See packages and prices</a>
     <div class="demos">
       <article>
         <div class="preview"><img src="clearroom-preview.jpg" alt="Clearroom home page with a cleaning estimate calculator"></div>
@@ -56,7 +65,26 @@
         </div>
       </article>
     </div>
-    <footer>Fictional businesses. The demos do not take appointments or submit enquiries.</footer>
+    <p class="demo-note">Both businesses are fictional. These demos don’t accept appointments or enquiries.</p>
+    <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+      <h2 id="pricing-title">Website packages</h2>
+      <p>Both include mobile design, a link to your existing booking service or a simple enquiry form, one round of revisions, and handover.</p>
+      <div class="packages">
+        <div class="package">
+          <h3>One-page website</h3>
+          <p class="amount">US$650 <span>or £495</span></p>
+          <p class="scope">Put your services, prices and contact details on one page.</p>
+          <a class="contact" href="mailto:s4s4spol@gmail.com?subject=One-page%20website&amp;body=Hi%20Alexander%2C%0A%0AMy%20business%20and%20existing%20website%3A%20%0AI%27d%20like%20visitors%20to%3A%20%0ATarget%20launch%20date%3A%20">Ask about one page</a>
+        </div>
+        <div class="package">
+          <h3>Up to three pages</h3>
+          <p class="amount">US$895 <span>or £695</span></p>
+          <p class="scope">Give your business, services and contact details their own pages.</p>
+          <a class="contact" href="mailto:s4s4spol@gmail.com?subject=Three-page%20website&amp;body=Hi%20Alexander%2C%0A%0AMy%20business%20and%20existing%20website%3A%20%0AI%27d%20like%20visitors%20to%3A%20%0ATarget%20launch%20date%3A%20">Ask about three pages</a>
+        </div>
+      </div>
+      <p>See a first preview within five business days of sharing your approved text, photos and service details. Domain, hosting and any booking subscriptions are paid separately.</p>
+    </section>
   </main>
 </body>
 </html>
