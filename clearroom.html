@@ -55,11 +55,11 @@
     select { color:var(--ink); background:#fff; border:1px solid #9baa9b; justify-self:stretch; width:100%; min-height:45px; padding:8px 12px; }
     .extra { display:flex; gap:9px; align-items:center; margin-top:20px; line-height:1.4; }
     .result { display:grid; grid-template-columns:1fr auto; align-items:center; gap:12px 18px; padding:17px clamp(20px,3.3vw,40px); background:var(--green); color:var(--paper); }
-    .result p { color:#e4eddc; font-size:.9rem; }
-    .result p strong { color:var(--paper); display:block; font-size:1.18rem; }
+    .result p,.result output { color:#e4eddc; font-size:.9rem; }
+    .result strong { color:var(--paper); display:block; font-size:1.18rem; }
+    .estimate-note { display:block; margin-top:4px; font-size:.85rem; }
     .result .button { background:var(--lime); border-color:var(--lime); color:var(--green); }
     .result .button:hover { background:#eff4bc; }
-    .result output:not(:empty) { grid-column:1 / -1; display:block; padding-top:11px; border-top:1px solid #8d9f91; font-size:1rem; font-weight:750; }
     .services { padding-block:70px; }
     .service-list { margin-top:25px; border-top:1px solid var(--line); }
     .service { display:grid; grid-template-columns:.9fr 1.2fr auto; gap:16px; align-items:center; padding:22px 0; border-bottom:1px solid var(--line); }
@@ -129,9 +129,17 @@
           <label class="extra"><input type="checkbox" name="oven"> Include inside the oven (+$35)</label>
         </div>
         <div class="result">
-          <p><span id="estimate-service">Regular cleaning</span> <strong id="estimate-base">From $95</strong></p>
+          <div>
+            <p id="estimate-starting"><span id="estimate-service">Regular cleaning</span> <strong id="estimate-base">From $95</strong></p>
+            <output id="estimate-result" aria-live="polite" aria-atomic="true">
+              <span id="estimate-live" hidden>
+                <span id="estimate-label">Sample estimate</span>
+                <strong id="estimate-total"></strong>
+                <span class="estimate-note">No request was sent.</span>
+              </span>
+            </output>
+          </div>
           <button class="button" type="submit">Calculate estimate <span aria-hidden="true">↗</span></button>
-          <output id="estimate-result" aria-live="polite"></output>
         </div>
       </form>
       </section>
@@ -155,15 +163,28 @@
   <footer class="wrap"><span>Clearroom Cleaning · Portfolio demo</span><span>Photography by Max Vakhtbovych on <a href="https://www.pexels.com/photo/couch-in-room-8092177/">Pexels</a>.</span></footer>
   <script>
     const form = document.getElementById('estimate');
-    const result = document.getElementById('estimate-result');
+    const startingEstimate = document.getElementById('estimate-starting');
+    const liveEstimate = document.getElementById('estimate-live');
     const serviceSummary = document.getElementById('estimate-service');
     const baseSummary = document.getElementById('estimate-base');
+    const estimateLabel = document.getElementById('estimate-label');
+    const estimateTotal = document.getElementById('estimate-total');
     const money = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 });
     function refreshEstimate() {
       const service = form.querySelector('input[name="service"]:checked');
-      serviceSummary.textContent = service.labels[0].textContent.trim() + ' cleaning';
-      baseSummary.textContent = 'From ' + money.format(Number(service.dataset.base));
-      result.value = '';
+      const serviceName = service.labels[0].textContent.trim() + ' cleaning';
+      const base = Number(service.dataset.base);
+      if (liveEstimate.hidden) {
+        serviceSummary.textContent = serviceName;
+        baseSummary.textContent = 'From ' + money.format(base);
+        return;
+      }
+      const data = new FormData(form);
+      const bedrooms = Math.max(0, Number(data.get('bedrooms')) - 1) * 22;
+      const bathrooms = (Number(data.get('bathrooms')) - 1) * 25;
+      const total = base + bedrooms + bathrooms + (data.has('oven') ? 35 : 0);
+      estimateLabel.textContent = serviceName + ' estimate';
+      estimateTotal.textContent = money.format(total);
     }
     form.addEventListener('input', refreshEstimate);
     document.querySelectorAll('[data-service]').forEach(link => {
@@ -174,12 +195,9 @@
     });
     form.addEventListener('submit', event => {
       event.preventDefault();
-      const data = new FormData(form);
-      const base = Number(form.querySelector('input[name="service"]:checked').dataset.base);
-      const bedrooms = Math.max(0, Number(data.get('bedrooms')) - 1) * 22;
-      const bathrooms = (Number(data.get('bathrooms')) - 1) * 25;
-      const total = base + bedrooms + bathrooms + (data.has('oven') ? 35 : 0);
-      result.value = 'Sample estimate: ' + money.format(total) + '. No request was sent.';
+      startingEstimate.hidden = true;
+      liveEstimate.hidden = false;
+      refreshEstimate();
     });
   </script>
 </body>
