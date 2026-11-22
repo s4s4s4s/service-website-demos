@@ -1,0 +1,96 @@
+---
+import services from "../services.json";
+
+const [defaultService] = services;
+const roomCounts = [1, 2, 3, 4];
+---
+
+<section class="quote" id="quote" aria-labelledby="quote-title">
+  <div class="section-head">
+    <h2 id="quote-title">Price your clean.</h2>
+    <p id="quote-note">This calculator uses sample prices for a fictional cleaning business. Your choices stay in this browser.</p>
+  </div>
+  <form class="estimate" id="estimate" aria-describedby="quote-note">
+    <div class="form-controls">
+      <fieldset>
+        <legend>Type of cleaning</legend>
+        <div class="options">
+          {services.map(({ slug, title, label, base }, index) => (
+            <label class="choice">
+              <input type="radio" name="service" value={slug} data-title={title} data-base={base} checked={index === 0} /> {label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <div class="fields">
+        <label>
+          Bedrooms
+          <select name="bedrooms">
+            <option value="0">Studio</option>
+            {roomCounts.map(count => (
+              <option value={count} selected={count === 1}>{count} {count === 1 ? "bedroom" : "bedrooms"}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Bathrooms
+          <select name="bathrooms">
+            {roomCounts.map(count => (
+              <option value={count} selected={count === 1}>{count} {count === 1 ? "bathroom" : "bathrooms"}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <label class="extra"><input type="checkbox" name="oven" /> Include inside the oven (+$35)</label>
+    </div>
+    <div class="result">
+      <p><span id="estimate-service">{defaultService.title}</span> <strong id="estimate-base">From ${defaultService.base}</strong></p>
+      <button class="button" type="submit">Calculate estimate <span aria-hidden="true">↗</span></button>
+      <output id="estimate-result" aria-live="polite"></output>
+    </div>
+  </form>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("#estimate");
+  const result = document.querySelector<HTMLOutputElement>("#estimate-result");
+  const serviceSummary = document.getElementById("estimate-service");
+  const baseSummary = document.getElementById("estimate-base");
+
+  if (!form || !result || !serviceSummary || !baseSummary) {
+    throw new Error("Estimate form markup is missing");
+  }
+
+  const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const options = [...form.querySelectorAll<HTMLInputElement>('input[name="service"]')];
+
+  const refreshEstimate = () => {
+    const service = options.find(option => option.checked);
+    if (!service) return;
+    serviceSummary.textContent = service.dataset.title ?? "";
+    baseSummary.textContent = "From " + money.format(Number(service.dataset.base));
+    result.value = "";
+  };
+
+  form.addEventListener("input", refreshEstimate);
+  document.querySelectorAll<HTMLAnchorElement>("[data-service]").forEach(link => {
+    link.addEventListener("click", () => {
+      const option = options.find(option => option.value === link.dataset.service);
+      if (!option) return;
+      option.checked = true;
+      refreshEstimate();
+    });
+  });
+
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    const service = options.find(option => option.checked);
+    if (!service) return;
+    const data = new FormData(form);
+    const base = Number(service.dataset.base);
+    const bedrooms = Math.max(0, Number(data.get("bedrooms")) - 1) * 22;
+    const bathrooms = (Number(data.get("bathrooms")) - 1) * 25;
+    const total = base + bedrooms + bathrooms + (data.has("oven") ? 35 : 0);
+    result.value = "Sample estimate: " + money.format(total) + ". No request was sent.";
+  });
+</script>

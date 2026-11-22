@@ -1,0 +1,55 @@
+---
+import Estimate from "../components/Estimate.astro";
+import services from "../services.json";
+import "../styles/clearroom.css";
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Try Clearroom's home cleaning quote calculator. Explore regular, deep and move-out cleaning with sample prices.">
+  <title>Clearroom Cleaning | Home cleaning estimates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+</head>
+<body id="top">
+  <header class="wrap masthead">
+    <a class="brand" href="#top">Clearroom</a>
+    <nav aria-label="Main"><a href="#services">Services</a><a href="#faq">How pricing works</a></nav>
+    <a class="button outline" href="#quote">Get an estimate <span aria-hidden="true">↗</span></a>
+  </header>
+  <main>
+    <section class="wrap hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">Come home<br>to clean.</h1>
+        <p>Regular, deep and move-out cleaning. See how the price changes with your rooms and the extras you need.</p>
+        <figure class="hero-image"><img src="clearroom-living.jpg" alt="A sunlit living room with a cream sofa and wooden floor" fetchpriority="high"></figure>
+      </div>
+      <Estimate />
+    </section>
+    <section class="wrap services" id="services" aria-labelledby="services-title">
+      <h2 id="services-title">Cleaning services</h2>
+      <div class="service-list">
+        {services.map(({ title, description, slug }) => (
+          <article class="service">
+            <h3>{title}</h3>
+            <p>{description}</p>
+            <a href="#quote" data-service={slug}>Estimate <span aria-hidden="true">↗</span></a>
+          </article>
+        ))}
+      </div>
+    </section>
+    <section class="wrap faq" id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Before your clean</h2>
+      <div>
+        <details><summary>How is the estimate calculated?</summary><p>The sample price starts with the service you choose. Additional bedrooms, bathrooms and an oven clean cost extra.</p></details>
+        <details><summary>Can I book from this page?</summary><p>Clearroom is a fictional business. The calculator gives a sample price and does not send a request.</p></details>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap"><span>Clearroom Cleaning · Portfolio demo</span><span>Photography by Max Vakhtbovych on <a href="https://www.pexels.com/photo/couch-in-room-8092177/">Pexels</a>.</span></footer>
+</body>
+</html>

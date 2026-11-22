@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "regular",
+    "title": "Regular cleaning",
+    "label": "Regular",
+    "description": "Floors, surfaces, kitchen counters and bathrooms for everyday upkeep.",
+    "base": 95
+  },
+  {
+    "slug": "deep",
+    "title": "Deep cleaning",
+    "label": "Deep",
+    "description": "Extra time for baseboards, shower buildup and corners that need more attention.",
+    "base": 150
+  },
+  {
+    "slug": "move-out",
+    "title": "Move-out cleaning",
+    "label": "Move-out",
+    "description": "A top-to-bottom clean for an empty home, including cabinet interiors.",
+    "base": 190
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "name": "clearroom-astro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "7.4.13"
+  }
+}
