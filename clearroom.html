@@ -129,7 +129,7 @@
           <label class="extra"><input type="checkbox" name="oven"> Include inside the oven (+$35)</label>
         </div>
         <div class="result">
-          <p>Regular cleaning <strong>From $95</strong></p>
+          <p><span id="estimate-service">Regular cleaning</span> <strong id="estimate-base">From $95</strong></p>
           <button class="button" type="submit">Calculate estimate <span aria-hidden="true">↗</span></button>
           <output id="estimate-result" aria-live="polite"></output>
         </div>
@@ -156,12 +156,20 @@
   <script>
     const form = document.getElementById('estimate');
     const result = document.getElementById('estimate-result');
+    const serviceSummary = document.getElementById('estimate-service');
+    const baseSummary = document.getElementById('estimate-base');
     const money = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 });
-    form.addEventListener('input', () => { result.value = ''; });
+    function refreshEstimate() {
+      const service = form.querySelector('input[name="service"]:checked');
+      serviceSummary.textContent = service.labels[0].textContent.trim() + ' cleaning';
+      baseSummary.textContent = 'From ' + money.format(Number(service.dataset.base));
+      result.value = '';
+    }
+    form.addEventListener('input', refreshEstimate);
     document.querySelectorAll('[data-service]').forEach(link => {
       link.addEventListener('click', () => {
         form.elements.service.value = link.dataset.service;
-        result.value = '';
+        refreshEstimate();
       });
     });
     form.addEventListener('submit', event => {
