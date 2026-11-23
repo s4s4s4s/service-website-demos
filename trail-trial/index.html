@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A playable Unity 3D time trial by Polyakov Studio. Choose a mount, steer through three gates and manage your boost.">
+  <title>Trail Trial · Polyakov Studio</title>
+  <style>
+    :root { color-scheme: light; --ink: #202f28; --muted: #55635b; --paper: #f5f2e8; --edge: #d6d7c9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.45 system-ui, sans-serif; }
+    main { width: min(1180px, calc(100% - 56px)); margin: 24px auto 38px; }
+    header { display: flex; align-items: end; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--edge); padding-bottom: 16px; margin-bottom: 24px; }
+    h1, h2, p { margin: 0; }
+    h1, h2 { font-family: Georgia, serif; font-weight: 400; }
+    h1 { font-size: clamp(2.75rem, 6vw, 5.4rem); letter-spacing: -.075em; line-height: .89; }
+    h2 { font-size: 1.75rem; line-height: 1.1; margin-bottom: 12px; }
+    header a { font-size: .96rem; text-underline-offset: 5px; color: var(--ink); white-space: nowrap; }
+    .game { display: grid; grid-template-columns: minmax(0, 1fr) 256px; gap: 24px; align-items: start; }
+    figure { margin: 0; min-width: 0; }
+    .stage { position: relative; overflow: hidden; background: #bdcfc4; border-radius: 7px; }
+    canvas { display: block; width: 100%; aspect-ratio: 16/10; background: #bdcfc4; }
+    .loading { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 20px; color: #17271e; background: #bdcfc4; }
+    .loading[hidden] { display: none; }
+    .loading progress { margin: 15px auto 0; width: min(200px, 65vw); }
+    .telemetry { position: absolute; top: 16px; left: 16px; right: 16px; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none; }
+    .telemetry span { background: #23352cec; color: #fff9eb; border-radius: 4px; padding: 5px 9px; font-size: .8rem; font-variant-numeric: tabular-nums; }
+    figcaption { padding: 13px 0; color: var(--muted); font-size: .92rem; }
+    .mounts { display: grid; gap: 8px; margin: 16px 0; }
+    .mount { text-align: left; font: inherit; color: inherit; background: transparent; border: 1px solid var(--edge); border-radius: 5px; display: grid; gap: 3px; padding: 10px 12px; cursor: pointer; }
+    .mount:hover:not(:disabled), .mount[aria-pressed=true] { background: #e6e9d8; border-color: #89967c; }
+    .mount small { color: var(--muted); }
+    .mount:disabled { cursor: default; }
+    button:focus-visible, canvas:focus-visible, a:focus-visible { outline: 3px solid #426d56; outline-offset: 3px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .action { background: #284534; border: 1px solid #284534; color: #fff9eb; font: inherit; font-weight: 650; border-radius: 5px; padding: 9px 13px; cursor: pointer; }
+    .action:disabled { opacity: .46; cursor: default; }
+    .secondary { background: transparent; color: var(--ink); }
+    .meter { margin-top: 16px; display: grid; gap: 5px; color: var(--muted); font-size: .91rem; }
+    progress { accent-color: #55785e; width: 100%; }
+    #result { color: var(--ink); font-size: .9rem; min-height: 1.45em; margin-top: 7px; }
+    @media (max-width: 760px) {
+      main { width: calc(100% - 28px); margin-top: 20px; }
+      header { margin-bottom: 16px; }
+      .game { grid-template-columns: 1fr; gap: 12px; }
+      .mounts { grid-template-columns: repeat(3, 1fr); }
+      .telemetry { top: 8px; left: 8px; right: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header><h1>Trail Trial</h1><a href="https://polyakov-studio.com/">Polyakov Studio</a></header>
+    <section class="game" aria-label="Unity time trial">
+      <figure>
+        <div class="stage">
+          <canvas id="trail" tabindex="0" aria-label="Trail Trial 3D course"></canvas>
+          <div class="telemetry" aria-hidden="true">
+            <span id="clock">0.0 s</span><span id="speed">0 m/s</span><span id="gates">0 / 3 gates</span>
+          </div>
+          <div class="loading" id="loading"><div id="load-text" role="status">Loading the Unity build…</div><progress id="loading-progress" max="1" value="0" aria-label="Loading Unity"></progress></div>
+        </div>
+        <figcaption><strong>Keyboard.</strong> Hold W or ↑ to ride, A/D or ←/→ to steer, and Space to boost. Aim for the three yellow gates.</figcaption>
+      </figure>
+      <aside aria-label="Ride controls">
+        <h2>Choose a mount</h2>
+        <p>Three horses with different speed, stamina and steering.</p>
+        <div class="mounts" aria-label="Available mounts">
+          <button class="mount" type="button" data-index="0" aria-pressed="true" disabled><strong>Juniper</strong><small>Top speed</small></button>
+          <button class="mount" type="button" data-index="1" aria-pressed="false" disabled><strong>Hazel</strong><small>Longer boost</small></button>
+          <button class="mount" type="button" data-index="2" aria-pressed="false" disabled><strong>Ash</strong><small>Quick steering</small></button>
+        </div>
+        <div class="actions">
+          <button class="action" type="button" id="start" disabled>Start ride</button>
+          <button class="action secondary" type="button" id="reset" disabled>Reset</button>
+        </div>
+        <label class="meter">Boost remaining <progress id="stamina" max="1" value="1"></progress></label>
+        <p id="result" role="status"></p>
+      </aside>
+    </section>
+  </main>
+  <script>
+    const trail = document.querySelector('#trail');
+    const start = document.querySelector('#start');
+    const reset = document.querySelector('#reset');
+    const mountButtons = Array.from(document.querySelectorAll('.mount'));
+    const loading = document.querySelector('#loading');
+    const result = document.querySelector('#result');
+    let unity;
+    let lastState;
+    function renderState(detail) {
+      document.querySelector('#clock').textContent = `${detail.time.toFixed(1)} s`;
+      document.querySelector('#speed').textContent = `${detail.speed.toFixed(0)} m/s`;
+      document.querySelector('#gates').textContent = `${detail.gates} / 3 gates`;
+      document.querySelector('#stamina').value = detail.stamina;
+      start.disabled = !unity || detail.running;
+      reset.disabled = !unity || (!detail.running && !detail.finished);
+      start.textContent = detail.finished ? 'Ride again' : 'Start ride';
+      mountButtons.forEach((button, index) => {
+        button.disabled = !unity || detail.running;
+        button.setAttribute('aria-pressed', String(index === detail.mount));
+      });
+      result.textContent = detail.finished ? `Finished in ${detail.time.toFixed(1)} s with ${detail.gates} of 3 gates.` : '';
+    }
+    window.addEventListener('trail-update', ({detail}) => {
+      lastState = detail;
+      renderState(detail);
+      if (unity) loading.hidden = true;
+    });
+
+    start.addEventListener('click', () => {
+      unity.SendMessage('Trail Trial', 'BeginRide');
+      trail.focus();
+    });
+    reset.addEventListener('click', () => unity.SendMessage('Trail Trial', 'ResetRide'));
+    mountButtons.forEach(button => {
+      button.addEventListener('click', () => unity.SendMessage('Trail Trial', 'ChooseMount', button.dataset.index));
+    });
+    function showError() {
+      loading.hidden = false;
+      document.querySelector('#load-text').textContent = 'The Unity build could not load. Try reloading in a desktop browser with WebGL support.';
+      document.querySelector('#loading-progress').hidden = true;
+    }
+    const loader = document.createElement('script');
+    loader.src = 'Build/trail-trial.loader.js';
+    loader.onerror = showError;
+    loader.onload = async () => {
+      try {
+        unity = await createUnityInstance(trail, {
+          dataUrl: 'Build/trail-trial.data',
+          frameworkUrl: 'Build/trail-trial.framework.js',
+          codeUrl: 'Build/trail-trial.wasm',
+          companyName: 'Polyakov Studio', productName: 'Trail Trial', productVersion: '1.0',
+          devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.5),
+          showBanner: (_message, kind) => { if (kind === 'error') showError(); }
+        }, progress => { document.querySelector('#loading-progress').value = progress; });
+        if (lastState) {
+          renderState(lastState);
+          loading.hidden = true;
+        }
+      } catch (error) {
+        console.error(error);
+        showError();
+      }
+    };
+    document.body.append(loader);
+  </script>
+</body>
+</html>
