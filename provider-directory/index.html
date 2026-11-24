@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive provider directory concept by Polyakov Studio.">
+  <title>Find a provider | Juniper Community Health demo</title>
+  <link rel="stylesheet" href="directory.css">
+  <script src="directory.js" defer></script>
+</head>
+<body>
+  <a href="#main" class="skip">Skip to directory</a>
+  <header class="masthead section">
+    <div class="brand"><span class="mark" aria-hidden="true">+</span><span>Juniper <small>COMMUNITY HEALTH</small></span></div>
+    <p class="demo-label">Directory demo · Fictional providers</p>
+  </header>
+  <main id="main">
+    <div class="hero">
+      <div class="section hero-inner">
+        <h1>Find a provider</h1>
+        <p>Search by name, specialty, location, or language.</p>
+      </div>
+    </div>
+    <div class="section content">
+      <form id="filters" role="search" aria-label="Filter providers">
+        <div class="search-field">
+          <label for="q">Search</label>
+          <input type="search" placeholder="Name, specialty or location" id="q" name="q" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="specialty">Specialty</label>
+          <select id="specialty" name="specialty"><option value="">All specialties</option></select>
+        </div>
+        <div class="field">
+          <label for="location">Location</label>
+          <select id="location" name="location"><option value="">All locations</option></select>
+        </div>
+        <div class="field">
+          <label for="language">Language</label>
+          <select id="language" name="language"><option value="">All languages</option></select>
+        </div>
+        <label class="availability"><input type="checkbox" name="accepting" value="1"> Accepting new patients</label>
+        <button type="reset" class="reset">Reset filters</button>
+      </form>
+      <div class="results-heading">
+        <h2>Providers</h2>
+        <p id="summary" role="status" aria-live="polite" aria-atomic="true"></p>
+      </div>
+      <div id="results" class="results"></div>
+      <noscript><p>Enable JavaScript to use the demo directory.</p></noscript>
+    </div>
+  </main>
+  <dialog id="profile" aria-labelledby="profile-name">
+    <div class="dialog-content">
+      <button id="close-profile" class="close" type="button" aria-label="Close profile" autofocus>×</button>
+      <p class="profile-specialty" id="profile-specialty"></p>
+      <h2 id="profile-name"></h2>
+      <dl id="profile-details"></dl>
+      <p class="profile-note">Example profile. This directory uses fictional data.</p>
+    </div>
+  </dialog>
+  <footer class="section footer"><a href="https://polyakov-studio.com/">Polyakov Studio</a></footer>
+</body>
+</html>
