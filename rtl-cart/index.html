@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bilingual cart QA | Polyakov Studio</title>
+  <style>
+    * { box-sizing: border-box }
+    :root { color-scheme: light; accent-color: #205c4e }
+    body { margin: 0; background: #f0f3ee; color: #202b26; font: 1rem/1.5 system-ui, sans-serif }
+    main { max-width: 48rem; margin: auto; padding: clamp(1.25rem, 6vw, 4rem) }
+    nav { display: flex; flex-wrap: wrap; gap: .6rem }
+    nav a { border: 1px solid #a6b9ae; border-radius: 1.5rem; padding: .45rem .9rem; text-decoration: none }
+    nav a[aria-current] { background: #193e34; border-color: #193e34; color: #fff }
+    h1, h2 { font-family: Georgia, serif; font-weight: normal; line-height: 1.1 }
+    h1 { font-size: clamp(2.25rem, 6vw, 4rem); margin-bottom: .5rem }
+    a { color: #1c594c }
+    html[lang="ar"] h1, html[lang="ar"] h2 { font-family: system-ui, sans-serif; line-height: 1.35 }
+    .intro { max-width: 54ch; margin-block: .6rem 1.4rem; color: #42564c }
+    article, dialog { background: #fcfdfa; border: 1px solid #b9cabe; border-radius: 1rem }
+    article { margin-top: 1.5rem; padding: 1.25rem }
+    button, select { min-height: 44px; font: inherit; padding: .42rem .7rem }
+    button { background: #f3f8f4; color: #154737; border: 1px solid #86a799; border-radius: .45rem; cursor: pointer }
+    #add { background: #195343; color: #fff; border-color: #195343 }
+    button:disabled { cursor: default; opacity: .5 }
+    button[data-action="remove"] { border-color: transparent; text-decoration: underline }
+    :focus-visible { outline: 3px solid #256853; outline-offset: 3px }
+    dialog { padding: 1.2rem; width: min(29rem, calc(100% - 2rem)); max-height: calc(100% - 2rem); color: #23201d }
+    dialog::backdrop { background: rgb(30 24 20 / 57%) }
+    dialog header, .total { display: flex; justify-content: space-between; align-items: center; gap: .75rem }
+    dialog header h2 { margin: 0 }
+    ul { padding: 0; list-style: none }
+    li { padding: .85rem 0; border-bottom: 1px solid #b9cabe }
+    li p { margin-block: 0 .3rem; margin-inline: 0 .25rem }
+    .quantity { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem }
+  </style>
+</head>
+<body>
+  <main>
+    <nav aria-label="Language" id="languages"></nav>
+    <h1 id="heading"></h1>
+    <p class="intro" id="intro"></p>
+    <button id="open-cart" type="button" aria-haspopup="dialog"></button>
+    <article aria-labelledby="product">
+      <h2 id="product"></h2>
+      <p id="price"></p>
+      <p><label for="color" id="color-name"></label> <select id="color"></select></p>
+      <button id="add" type="button"></button>
+    </article>
+  </main>
+  <dialog id="cart" aria-labelledby="cart-title">
+    <header><h2 id="cart-title"></h2><button id="close" type="button" autofocus></button></header>
+    <p id="empty"></p>
+    <ul id="lines"></ul>
+    <p class="total" aria-live="polite"><span id="total-label"></span><bdi data-testid="total"></bdi></p>
+  </dialog>
+  <script type="module">
+    import { addVariant, colors, readCart, unitPrice, variantLabel } from './cart.mjs';
+
+    const copy = {
+      en: {
+        heading: 'Bilingual cart QA',
+        intro: 'Add a sample item, switch to Arabic and reopen the cart. The color, quantity and value stay the same.',
+        language: 'Language', item: 'Ceramic desk pot', color: 'Color', add: 'Add to cart', cart: 'Cart',
+        close: 'Close', total: 'Total', empty: 'Your cart is empty.', less: 'Decrease quantity',
+        more: 'Increase quantity', remove: 'Remove',
+      },
+      ar: {
+        heading: 'اختبار سلة التسوق بلغتين',
+        intro: 'أضف منتجًا تجريبيًا، ثم بدّل اللغة إلى الإنجليزية وافتح السلة من جديد. سيبقى اللون والكمية والسعر كما هي.',
+        language: 'اللغة', item: 'أصيص سيراميك للمكتب', color: 'اللون', add: 'أضف إلى السلة', cart: 'السلة',
+        close: 'إغلاق', total: 'الإجمالي', empty: 'سلة التسوق فارغة.', less: 'تقليل الكمية',
+        more: 'زيادة الكمية', remove: 'إزالة',
+      },
+    };
+    const languageNames = { en: 'English', ar: 'العربية' };
+    const requested = new URLSearchParams(location.search).get('lang');
+    const locale = Object.hasOwn(copy, requested) ? requested : 'en';
+    const labels = copy[locale];
+    document.documentElement.lang = locale;
+    document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
+    const storageKey = 'polyakov-bilingual-cart-v1';
+    const cart = readCart(localStorage.getItem(storageKey));
+    const byId = (id) => document.getElementById(id);
+    const dialog = byId('cart');
+    const trigger = byId('open-cart');
+    const close = byId('close');
+    const lines = byId('lines');
+    const selectableColor = byId('color');
+    const numberLocale = locale === 'ar' ? 'ar-AE' : 'en-AE';
+    const currency = new Intl.NumberFormat(numberLocale, { style: 'currency', currency: 'AED' });
+    const integer = new Intl.NumberFormat(numberLocale);
+    const money = (fils) => currency.format(fils / 100);
+    byId('languages').setAttribute('aria-label', labels.language);
+    byId('intro').textContent = labels.intro;
+
+    Object.entries(languageNames).forEach(([code, name]) => {
+      const link = document.createElement('a');
+      link.href = '?lang=' + code;
+      link.lang = code;
+      link.dir = 'auto';
+      link.textContent = name;
+      if (code === locale) link.setAttribute('aria-current', 'page');
+      byId('languages').append(link);
+    });
+    Object.entries(colors).forEach(([id, options]) => {
+      selectableColor.add(new Option(options[locale], id));
+    });
+    byId('heading').textContent = labels.heading;
+    byId('product').textContent = labels.item;
+    byId('price').textContent = money(unitPrice);
+    byId('color-name').textContent = labels.color;
+    byId('add').textContent = labels.add;
+    byId('cart-title').textContent = labels.cart;
+    byId('empty').textContent = labels.empty;
+    byId('total-label').textContent = labels.total;
+    close.textContent = labels.close;
+
+    function control(action, caption, accessibleName = caption) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.action = action;
+      button.textContent = caption;
+      button.setAttribute('aria-label', accessibleName);
+      return button;
+    }
+
+    function render() {
+      const count = cart.reduce((total, line) => total + line.quantity, 0);
+      trigger.textContent = labels.cart + ' (' + integer.format(count) + ')';
+      byId('empty').hidden = count !== 0;
+      lines.replaceChildren(...cart.map((line, index) => {
+        const row = document.createElement('li');
+        row.dataset.index = index;
+        row.dataset.testid = 'cart-line';
+        const name = document.createElement('p');
+        name.textContent = labels.item;
+        const color = document.createElement('p');
+        color.dataset.testid = 'variant';
+        color.textContent = variantLabel(line, locale);
+        const actions = document.createElement('div');
+        actions.className = 'quantity';
+        const less = control('less', '−', labels.less);
+        less.disabled = line.quantity <= 1;
+        const quantity = document.createElement('span');
+        quantity.dataset.testid = 'quantity';
+        quantity.textContent = integer.format(line.quantity);
+        const subtotal = document.createElement('bdi');
+        subtotal.textContent = money(line.quantity * line.unitPrice);
+        actions.append(less, quantity, control('more', '+', labels.more), subtotal, control('remove', labels.remove));
+        row.append(name, color, actions);
+        return row;
+      }));
+      const total = cart.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0);
+      dialog.querySelector('[data-testid="total"]').textContent = money(total);
+    }
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify({ version: 2, items: cart }));
+      render();
+    }
+
+    byId('add').addEventListener('click', () => {
+      addVariant(cart, selectableColor.value);
+      save();
+    });
+    trigger.addEventListener('click', () => {
+      dialog.showModal();
+      close.focus();
+    });
+    close.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => trigger.focus());
+
+    lines.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-action]');
+      if (!button) return;
+      const index = Number(button.closest('li').dataset.index);
+      const action = button.dataset.action;
+      if (action === 'remove') {
+        cart.splice(index, 1);
+        save();
+        close.focus();
+        return;
+      }
+      cart[index].quantity += action === 'more' ? 1 : -1;
+      save();
+      const retained = lines.children[index].querySelector('[data-action="' + action + '"]:not(:disabled)');
+      (retained || close).focus();
+    });
+
+    // Wrap the ends of the tab sequence without moving focus as you edit a line.
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const buttons = [...dialog.querySelectorAll('button:not(:disabled)')];
+      const edge = event.shiftKey ? buttons[0] : buttons.at(-1);
+      if (document.activeElement !== edge) return;
+      event.preventDefault();
+      (event.shiftKey ? buttons.at(-1) : buttons[0]).focus();
+    });
+
+    render();
+  </script>
+</body>
+</html>
