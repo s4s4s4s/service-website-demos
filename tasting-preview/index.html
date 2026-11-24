@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Tasting reservation · Button preview</title>
+  <style>
+    :root { color: #261c20; background: #f5f0eb; font-family: system-ui, sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; }
+    header, main, footer { width: min(64rem, calc(100% - 3rem)); margin-inline: auto; }
+    header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-block: 1.5rem; border-bottom: 1px solid #ded3d0; }
+    header span:first-child { font-size: 1rem; font-weight: 700; }
+    header span:last-child { color: #665458; font-size: .875rem; text-align: right; }
+    h1, h2 { font-family: Georgia, serif; font-weight: 400; margin: 0; }
+    h1 { font-size: clamp(2.4rem, 6.5vw, 4.75rem); line-height: 1.04; letter-spacing: -.045em; margin-block: 1.55rem; }
+    h2 { font-size: 1.8rem; line-height: 1.15; }
+    .panels { display: grid; grid-template-columns: .88fr 1.12fr; gap: 1rem; }
+    .tasting, .draft { padding: clamp(1.2rem, 4vw, 2.1rem); border-radius: .8rem; }
+    .tasting { background: #52263d; color: #fff9f6; }
+    .draft { background: #fffdfa; border: 1px solid #ded3d0; }
+    .price { font-size: 1.2rem; font-weight: 650; margin-bottom: .35rem; }
+    .group { color: #f0dfe8; margin-top: 0; }
+    .open { display: inline-flex; min-height: 2.75rem; align-items: center; margin-top: .8rem; padding: .65rem 1.1rem; border-radius: .38rem; text-decoration: none; background: #fff4ec; color: #452137; font-weight: 700; }
+    .open:hover { background: #f4d7c7; }
+    :focus-visible { outline: 3px solid #b05f19; outline-offset: 4px; }
+    p, dl { line-height: 1.5; }
+    .tasting p:last-child { font-size: .9rem; color: #f0dfe8; margin-bottom: 0; }
+    dl { margin-bottom: 0; display: grid; grid-template-columns: auto 1fr; gap: .6rem .9rem; overflow-wrap: anywhere; }
+    dt { color: #665458; }
+    dd { margin: 0; }
+    footer { margin-top: 1.3rem; margin-bottom: 2rem; font-size: .9rem; }
+    footer a { color: #6a3852; }
+    @media (max-width: 42rem) {
+      header, main, footer { width: calc(100% - 2rem); }
+      .panels { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header><span>Gevorkian Winery</span><span>Booking button preview</span></header>
+  <main>
+    <h1>Tasting reservation</h1>
+    <div class="panels">
+      <section class="tasting" aria-labelledby="package">
+        <h2 id="package">Package 1</h2>
+        <p class="price">7,000 AMD</p>
+        <p class="group">For groups of 5 or more</p>
+        <a class="open" href="mailto:info@gevorkianwinery.com?subject=Tour%20request%20%7C%20Package%201&amp;body=Hello%20Gevorkian%20Winery%2C%0D%0A%0D%0AI%27d%20like%20to%20request%20a%20winery%20tour.%0D%0ATasting%20package%3A%20Package%201%20%287%2C000%20AMD%29%0D%0APreferred%20date%20%28Monday%20to%20Saturday%29%3A%0D%0APreferred%20visit%20window%20%2810%3A00%20to%2013%3A00%20or%2014%3A00%20to%2017%3A00%29%3A%0D%0AGroup%20size%20%285%20or%20more%29%3A%0D%0A%0D%0AThank%20you.">Open reservation email</a>
+        <p>Your email app opens a draft for you to review.</p>
+      </section>
+      <section class="draft" aria-labelledby="details">
+        <h2 id="details">What the team receives</h2>
+        <dl>
+          <dt>Subject</dt><dd>Tour request | Package 1</dd>
+          <dt>Package</dt><dd>Package 1 (7,000 AMD)</dd>
+          <dt>Date</dt><dd>Guest chooses Monday to Saturday</dd>
+          <dt>Time</dt><dd>10:00–13:00 or 14:00–17:00</dd>
+          <dt>Group size</dt><dd>Guest enters 5 or more</dd>
+        </dl>
+      </section>
+    </div>
+  </main>
+  <footer>Preview prepared by <a href="https://polyakov-studio.com/">Polyakov Studio</a>.</footer>
+</body>
+</html>
